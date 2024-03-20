@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/sh
 
 # oldstable, stable, testing, unstable
-BRANCH=testing
+BRANCH=oldoldstable
 # base(258M), minbase(217M), buildd, fakechroot
 VAR=minbase
 # list_close_debian_mirrors.sh

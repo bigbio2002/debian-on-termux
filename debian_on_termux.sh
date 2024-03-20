@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/sh
+#!/data/data/com.termux/files/usr/bin/bash
 
 #
 # some configuration. adapt this to your needs
@@ -6,8 +6,8 @@
 DO_FIRST_STAGE=:  #false   # required (unpack phase/ executes outside guest invironment)
 DO_SECOND_STAGE=: #false   # required (complete the install/ executes inside guest invironment)
 DO_THIRD_STAGE=:  #false   # optional (enable local policies/ executes inside guest invironment)
-VERSION=stable             # debian versions: stable, testing, unstable
-ROOTFS_TOP=deboot_debian   # name of the top install directory
+VERSION=oldoldstable             # debian versions: stable, testing, unstable
+ROOTFS_TOP=deboot_debian10   # name of the top install directory
 
 #
 # some automatic configuration.
@@ -151,6 +151,7 @@ gpg --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
 DEBOOTSTRAP_DIR="$(pwd)"
 export DEBOOTSTRAP_DIR
 O="$("$PREFIX/bin/proot" \
+    -b /apex \
     -b /system \
     -b /vendor \
     -b /data \
@@ -165,7 +166,7 @@ O="$("$PREFIX/bin/proot" \
     -r "$PREFIX/.." \
     -0 \
     --link2symlink \
-    ./debootstrap --keyring="$PREFIX/etc/apt/trusted.gpg" \
+    ./debootstrap --keyring="$PREFIX/etc/apt/trusted.gpg" --variant=minbase \
         --foreign --arch="$ARCHITECTURE" "$VERSION" "$HOME/$ROOTFS_TOP" 2>&1 || true)"
 echo "$O" > ~/debian-on-termux_debootstrap.log
 # proot returns invalid exit status
@@ -192,10 +193,10 @@ O="$("$PREFIX/bin/proot" \
     -b /dev \
     -b /proc \
     -r "$HOME/$ROOTFS_TOP" \
-    -w /root \
     -0 \
     --link2symlink /usr/bin/env \
     -i HOME=/root TERM=xterm /debootstrap/debootstrap --second-stage 2>&1 || true)"
+#    -w /root \
 echo "$O" > ~/debian-on-termux_debootstrap_stage2.log
 # proot returns invalid exit status
 if echo "$O" | grep " error: " > /dev/null ; then
